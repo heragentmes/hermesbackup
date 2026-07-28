@@ -61,9 +61,12 @@ When creating a backup cron job via the `cronjob` tool:
 ### Pitfalls
 
 - **Cron job creation fails with "no model configured"** — the `cronjob` tool requires `model` to be set explicitly. Create the job first, then immediately `cronjob action=update` with the model.
+- **Always confirm backup schedule with user** — don't assume hourly. Ask whether they want hourly, daily at midnight (`0 0 * * *`), weekly, etc. Daily at midnight is a common preference.
+- **Flag exposed credentials immediately** — if a user shares a GitHub PAT, API key, or token in chat, warn them right away and suggest rotating it. Even in private repos, tokens in chat history are a risk.
 - **GitHub token in shell commands** — security scanners flag PATs in command lines. User must approve the command. Consider using `git credential store` or SSH keys for recurring operations.
 - **Empty repo first push** — if the backup repo is empty, the first push creates the initial commit. Subsequent runs use pull-then-push.
 - **Port restrictions** — some environments block non-HTTPS ports. Use HTTPS URLs for git remotes, not SSH.
+- **API keys masked in `.env`** — terminal sessions may not have access to the actual API key (it's injected at runtime). Don't attempt to read `.env` to make external API calls — the key will be truncated/masked.
 
 ### Script Template
 
