@@ -9,3 +9,5 @@ user_language: Farsi (Persian). Always respond in Farsi unless instructed otherw
 User communicates in Farsi (Persian). Always respond in Farsi unless they switch languages.
 §
 User communicates in Farsi/Persian. Always respond in Farsi. Interested in AI/LLM tools and cost-effective solutions. Uses Telegram platform.
+§
+User prefers Farsi (Persian) for all conversation. Always respond in Farsi unless they switch languages.
