@@ -77,8 +77,14 @@ See `scripts/backup.sh` for a complete backup script with change detection.
 ### Common Patterns
 
 - **Hourly backups:** `schedule: "every 1h"`, script-based with change detection
+- **Daily at midnight:** `schedule: "0 0 * * *"` — cron expression, not human-readable. Use this for exact time targeting.
 - **Daily reports:** `schedule: "0 9 * * *"`, agent-based with prompt
 - **Watchdog:** `no_agent: true` with `script`, stdout delivered verbatim
+
+**Schedule format notes:**
+- `every 24h` = relative interval, drifts over time (fires 24h after last run, not at a fixed time)
+- `0 0 * * *` = cron expression, fires at exactly midnight every day
+- For precise daily timing, always use cron expressions, not `every Xh`
 
 ### Key Invariants
 
