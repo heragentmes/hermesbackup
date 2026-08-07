@@ -123,6 +123,13 @@ Compile findings into structured summary:
 - **CRITICAL: Iranian business registries are often inaccessible from outside Iran** — DNS resolution failures (cima.ir), 403s (samandehi.ir, iripo.ir), connection refused (samaneh.ir), or timeouts (enamad.ir, codal.ir) are common. Do not waste multiple attempts on these — if one fails, note it and move on.
 - **TSETMC** (Tehran Stock Exchange) API times out for non-ASCII queries from outside Iran
 
+### Freelancing Platform Cloudflare Walls
+- Major freelancing platforms (Upwork, Fiverr, Toptal, Freelancer.com) all deploy aggressive Cloudflare protection
+- Direct curl requests return challenge pages ("Just a moment...", "Please enable JavaScript")
+- Even search engines (Google, Bing, DuckDuckGo) block automated requests from server IPs with CAPTCHAs
+- **Workaround**: When all scraping fails, compile from documented policies (terms of service, help center knowledge bases) and widely reported user experiences. Flag which data points are from direct scraping vs. documented policies
+- **Pattern**: If the first 2-3 platforms all return Cloudflare challenges, do NOT keep retrying — switch to knowledge-based compilation immediately
+
 ### Language and Script Challenges
 - Brand names may appear in Persian/Arabic script, English, or transliterated
 - Search in BOTH scripts to maximize coverage
@@ -188,6 +195,49 @@ curl -sL "https://t.me/s/<channel>" | grep -oP '<title>[^<]+|"og:description" co
 # Check handle existence (returns meta info)
 curl -sL "https://www.instagram.com/<handle>/" -H "User-Agent: Mozilla/5.0" | grep -oP '"description":"[^"]*"'
 ```
+
+## Multi-Platform Attribute Comparison
+
+When the user asks to research multiple platforms/services for specific attributes (e.g., "compare KYC requirements and payment methods across these 6 sites"), use this pattern:
+
+### Parallel Fetch Strategy
+1. **Batch all main site fetches in one terminal call** — use a Python loop, not 6 separate curl calls. This is faster and reduces context bloat.
+2. **Search for keywords, not full-page reads** — fetch the page text then scan for the specific attributes (e.g., `['PayPal', 'identity', 'passport', 'KYC', 'crypto']`). Print surrounding context (±150-250 chars) around each match.
+3. **Check FAQ/help pages, not just landing pages** — the actual payment/KYC details are on FAQ, "how it works", or support pages. Main pages are marketing fluff.
+4. **Follow platform redirects** — some platforms rebrand worker-facing sites (e.g., Toloka workers → Mindrift). Check if the main site redirects workers elsewhere.
+5. **Compile into a summary table** at the end with columns for each attribute.
+
+### JS-Rendered Site Handling
+Many modern sites (Framer, Next.js, React) return minimal/empty text with `requests.get()` + BeautifulSoup because content is client-side rendered. Signs:
+- Page returns 200 but text is mostly CSS/JS boilerplate
+- FAQ/help content doesn't appear in the fetched text
+- Only navigation/header text is visible
+
+**Workarounds (in order of reliability):**
+1. **Check for keyword matches anyway** — even JS-rendered pages often have some static content (terms, meta descriptions) that mentions key terms
+2. **Try alternate pages** — terms of use, privacy policy, and help center pages are more likely to be server-rendered
+3. **Use Bing search** as a secondary source — `https://www.bing.com/search?q=QUERY` with a realistic User-Agent sometimes returns useful snippets
+4. **Accept partial data** — note which platforms had limited info and flag uncertainty in the summary
+
+### Search Engine Limitations from Servers
+- **Google**: Almost always blocks with CAPTCHA from server IPs. Do not retry.
+- **Bing**: Sometimes works, sometimes returns results buried in JS. Worth 1-2 tries.
+- **DuckDuckGo**: `https://html.duckduckgo.com/html/?q=QUERY` — often returns empty results from servers.
+- **Yahoo**: Sometimes works as fallback.
+- **Best approach**: Skip search engines for the initial pass. Fetch sites directly, then use search engines only for platforms where direct fetch failed.
+
+### Common Payment Processors in AI/Gig Platforms
+- **PayPal** (via Tipalti) — most common
+- **Stripe Connect** — common for US-focused platforms
+- **Payoneer** — common for international/global platforms
+- **Paxum** — used by some (e.g., Outlier/Scale AI per community reports)
+- **Wire transfer** — rare, usually for large amounts
+- **Crypto**: Only Hive Micro supports Bitcoin as a direct payment method. AirTM (used by Scale AI/Remotasks) supports crypto conversion but is not a crypto-native payment. No other major AI training platforms support cryptocurrency payments as of 2026.
+
+### Common KYC Patterns
+- **Persona** — most popular KYC vendor (used by DataAnnotation, Alignerr, and others). Requires government-issued photo ID (driver's license, passport, national ID).
+- **Phone SMS verification** — often a first step before full KYC
+- **Tiered verification** — some platforms allow basic work without KYC but require it for specialized/higher-paying projects (e.g., Toloka/Mindrift)
 
 ## Phase 4: Marketing Proposal Generation
 
@@ -323,3 +373,5 @@ Never publish the same content everywhere. Each platform has its own audience an
 
 See `references/iranian-internet.md` for detailed notes on the Iranian internet ecosystem, business registries, and social media landscape.
 See `references/takam-imran-artin-research.md` for a full research log documenting what was attempted and what failed for an Iranian construction company with minimal online presence.
+See `references/ai-training-platforms-comparison.md` for a multi-platform comparison of AI training/data annotation platforms (KYC requirements, payment methods, crypto support).
+See `references/freelancing-platforms-comparison.md` for a multi-platform comparison of freelancing/marketplace platforms (KYC requirements, payment methods, crypto support, Iran accessibility).
