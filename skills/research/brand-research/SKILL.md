@@ -371,6 +371,7 @@ Never publish the same content everywhere. Each platform has its own audience an
 
 ## References
 
+See `references/telegram-channel-analysis.md` for methodology on analyzing Telegram channels (content categorization, posting patterns, ad detection, view analysis).
 See `references/iranian-internet.md` for detailed notes on the Iranian internet ecosystem, business registries, and social media landscape.
 See `references/takam-imran-artin-research.md` for a full research log documenting what was attempted and what failed for an Iranian construction company with minimal online presence.
 See `references/ai-training-platforms-comparison.md` for a multi-platform comparison of AI training/data annotation platforms (KYC requirements, payment methods, crypto support).
